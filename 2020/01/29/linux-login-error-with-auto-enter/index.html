@@ -1,0 +1,58 @@
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><meta name="baidu-site-verification"><title>在虛擬終端機無法正常登入 -- 輸入密碼時自動換行導致無止境登入失敗 | LianSheng</title><link rel="stylesheet" type="text/css" href="/blog/css/style.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.png"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><meta name="generator" content="Hexo 4.2.0"></head><link rel="stylesheet" type="text/css" href="/blog/plugins/prettify/doxy.css"><script type="text/javascript" src="/blog/js/ready.js" async></script><body><div class="mobile-head" id="mobile-head"><div class="navbar-icon"><span></span><span></span><span></span></div><div class="navbar-title"><a href="/">Just for fun</a></div><div class="navbar-search"><!--= show a circle here--></div></div><div class="h-wrapper" id="menu"><nav class="h-head box"><div class="m-hdimg"><a class="hdimg img" href="/blog/"><img class="nofancybox" src="/blog/img/profile.jpg" width="128" height="128"></a><h1 class="ttl"><a href="/blog/">LianSheng</a></h1></div><p class="m-desc">浮潛於資訊中，深知無力...<br>即便如此仍不願放棄。</p><div class="m-nav"><ul><li><span class="dot">●</span><a href="/blog/archives/">歸檔</a></li><li><span class="dot">●</span><a href="/blog/categories/">分類</a></li><li><span class="dot">●</span><a href="/blog/tags/">標籤</a></li><li><span class="dot">●</span><a href="/blog/about/">關於</a></li><li><span class="dot">●</span><a href="/blog/./"></a></li><li><span class="dot">●</span><a href="/blog/./"></a></li><li class="m-sch"><form class="form" id="j-formsch" method="get"><input class="txt" type="text" id="local-search-input" name="q" value="搜索" onfocus="if(this.value=='搜索'){this.value='';}" onblur="if(this.value==''){this.value='搜索';}"><input type="text" style="display:none;"></form></li></ul><div id="local-search-result"></div></div></nav></div><div id="back2Top"><a class="fa fa-arrow-up" title="Back to top" href="#"></a></div><div class="box" id="container"><div class="l-wrapper"><div class="l-content box"><div class="l-post l-post-art"><article class="p-art"><div class="p-header box"><h1 class="p-title">在虛擬終端機無法正常登入 -- 輸入密碼時自動換行導致無止境登入失敗</h1><div class="p-info"><span class="p-date"><i class="fa fa-calendar"></i><a href="/blog/2020/01/29/linux-login-error-with-auto-enter/">2020-01-29</a></span><span class="p-category"><i class="fa fa-folder"></i><a href="/blog/categories/%E7%A8%8B%E5%BC%8F/">程式</a>&nbsp;&bull;&nbsp;<a href="/blog/categories/%E7%A8%8B%E5%BC%8F/Linux/">Linux</a></span><span class="p-view" id="busuanzi_container_page_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_page_pv"></span></span></div></div><div class="p-content"><h3 id="環境：Ubuntu-Server-16-04-6"><a href="#環境：Ubuntu-Server-16-04-6" class="headerlink" title="環境：Ubuntu Server 16.04.6"></a>環境：Ubuntu Server 16.04.6</h3><h3 id="大致狀況"><a href="#大致狀況" class="headerlink" title="大致狀況"></a>大致狀況</h3><p>輸入帳號後，在輸入密碼時系統會自動添加換行導致登入失敗；循環約五六次後，getty 更新畫面，等待使用者再次輸入帳號，然後再循環自動換行的詭異錯誤，永無止境。</p>
+<a id="more"></a>
+
+<h3 id="可能原因"><a href="#可能原因" class="headerlink" title="可能原因"></a>可能原因</h3><p>安裝並啟用了 gpm 這個功能，而目前已知 Kernel Version 4.15.0-44, 4.15.0-45, 4.4.0-142 均與此不相容，造成意外錯誤。<a href="https://forums.linuxmint.com/viewtopic.php?p=1591640&sid=61f374f059667a24c1d8a0a0d750d62b#p1591640" target="_blank" rel="noopener">[1]</a>, <a href="https://bugs.launchpad.net/ubuntu/+source/gpm/+bug/1814261" target="_blank" rel="noopener">[2]</a></p>
+<h3 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h3><ol>
+<li>升級或降級 Kernel Version</li>
+<li>解除安裝 gpm 及相關套件</li>
+</ol>
+<h3 id="解決流程"><a href="#解決流程" class="headerlink" title="解決流程"></a>解決流程</h3><p>由於常規登入已無法使用，因此必須在 GRUB 介面選擇進階開機並選擇含有 Recovery 字眼的選項開機，接著選用 root 操作，就能以 root 權限進入熟悉的終端機介面了。</p>
+<p><img src="https://i.imgur.com/Cug93zC.png" alt=""><br><img src="https://i.imgur.com/HqICBle.png" alt=""><br><img src="https://i.imgur.com/s8hD7Ik.png" alt=""></p>
+<p>而這裡我採取的是<strong>第 2 個</strong>解決方法，選用原因純粹相對單純。</p>
+<pre><code class="bash">apt remove gpm
+apt autoremove
+reboot</code></pre>
+<p>接著以常規開機便能登入了。</p>
+<p>[size=8][color=#3333]( 但是這裡我又遇到另一個問題了，登入後 tty 自動重設的怪問題，但是在文字閃過瞬間是有看到最後登入紀錄的，表示有登入成功，只是不明原因自動 exit shell 或是 restart getty，詳細是什麼情況還有待解決。)<br>( 如果成功解決的話就會有下篇筆記 )[/color][/size]</p>
+<h3 id="參考文章"><a href="#參考文章" class="headerlink" title="參考文章"></a>參考文章</h3><ol>
+<li><a href="https://forums.linuxmint.com/viewtopic.php?t=287366" target="_blank" rel="noopener">Unable to login on virtual terminals: Entering username “auto-enters” blank passwords; gretty crashing - Linux Mint Forums</a></li>
+<li><a href="https://bugs.launchpad.net/ubuntu/+source/gpm/+bug/1814261" target="_blank" rel="noopener">Bug #1814261 “gpm prevents loging to the console: spurious “Ente…” : Bugs : gpm package : Ubuntu</a></li>
+</ol>
+</div></article><div class="p-info box"><span class="p-tags"><i class="fa fa-tags"></i><a href="/blog/tags/Linux/">Linux</a><a href="/blog/tags/gpm/">gpm</a></span></div><aside id="toc"><div class="toc-title">目录</div><nav><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#環境：Ubuntu-Server-16-04-6"><span class="toc-number">1.</span> <span class="toc-text">環境：Ubuntu Server 16.04.6</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#大致狀況"><span class="toc-number">2.</span> <span class="toc-text">大致狀況</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#可能原因"><span class="toc-number">3.</span> <span class="toc-text">可能原因</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解決方法"><span class="toc-number">4.</span> <span class="toc-text">解決方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解決流程"><span class="toc-number">5.</span> <span class="toc-text">解決流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#參考文章"><span class="toc-number">6.</span> <span class="toc-text">參考文章</span></a></li></ol></nav></aside></div><section class="p-ext"><div id="valine-comment"><style type="text/css">.v * { color: #CECECE; }
+.v a { color: #0F9FB4; }
+.v a:hover { color: #216C73; }
+.v li { list-style: inherit; }
+.v .vwrap { border: 1px solid #223441; border-radius: 0; }
+.v .vwrap:hover { box-shadow: 0 0 6px 1px #223441; }
+.v .vbtn { border-radius: 0; color: #cecece; background: none; }
+.v .vlist .vcard .vh { border-bottom-color: #293D4E; }
+.v .vwrap .vheader .vinput { border-bottom-color: #223441; }
+.v .vwrap .vheader .vinput:focus { border-bottom-color: #339EB4; }
+.v code, .v pre,.v .vlist .vcard .vhead .vsys { background: #203240; }
+.v code, .v pre { color: #F0F0F0; font-size: 95%; }
+.v .vlist .vcard .vcontent.expand:before { background: linear-gradient(180deg,hsla(206,33%,19%,0),hsla(206,33%,19%,.9)); }
+.v .vlist .vcard .vcontent.expand:after { background: hsla(206,33%,19%,.9); }</style><div id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' == true ? true : false;
+var verify = 'false' == true ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'',
+  appKey:'',
+  lang: 'zh-TW',
+  placeholder:'ヾﾉ≧∀≦)o Come on, say something...',
+  avatar:'identicon',
+  guest_info:guest_info,
+  pageSize:'10'
+})</script></div></section><footer><p>Copyright © 2020 - 2020 <a href="/blog/." rel="nofollow">LianSheng</a> | <strong><a rel="nofollow" target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></strong><br><span id="busuanzi_container_site_uv"><i class="fa fa-user"></i><span id="busuanzi_value_site_uv"></span></span> <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_site_pv"></span></span> | Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a>Theme with<a rel="nofollow" target="_blank" href="https://github.com/litreily/snark-hexo"> snark.</a></p></footer></div></div></div><script type="text/javascript" src="/blog/plugins/prettify/prettify.js"></script><script type="text/javascript" src="/blog/js/search.js"></script><script type="text/javascript" src="/blog/js/top.js"></script><script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+    search_path = 'search.xml';
+}
+var path = '/blog/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/blog/js/fancybox.js?v=0.0.1" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.css"></body></html>

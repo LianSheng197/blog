@@ -4,42 +4,29 @@
   
     
     <entry>
-      <title>標題</title>
-      <link href="/blog/2020/04/04/newpost123/"/>
-      <url>/blog/2020/04/04/newpost123/</url>
+      <title>在虛擬終端機無法正常登入 -- 輸入密碼時自動換行導致無止境登入失敗</title>
+      <link href="/blog/2020/01/29/linux-login-error-with-auto-enter/"/>
+      <url>/blog/2020/01/29/linux-login-error-with-auto-enter/</url>
       
-        <content type="html"><![CDATA[<h2 id="H2-有底線"><a href="#H2-有底線" class="headerlink" title="H2 有底線"></a>H2 有底線</h2><p>不要讓程式碼區塊預覽出來！！<br>不然該篇文章的下面幾篇的預覽會遭殃XD</p><a id="more"></a><h3 id="H3-標題"><a href="#H3-標題" class="headerlink" title="H3 標題"></a>H3 標題</h3><pre><code class="bash">#!/bin/bashecho 123;</code></pre><h3 id="截斷上面的程式碼區塊"><a href="#截斷上面的程式碼區塊" class="headerlink" title="截斷上面的程式碼區塊"></a>截斷上面的程式碼區塊</h3>]]></content>
+        <content type="html"><![CDATA[<h3 id="環境：Ubuntu-Server-16-04-6"><a href="#環境：Ubuntu-Server-16-04-6" class="headerlink" title="環境：Ubuntu Server 16.04.6"></a>環境：Ubuntu Server 16.04.6</h3><h3 id="大致狀況"><a href="#大致狀況" class="headerlink" title="大致狀況"></a>大致狀況</h3><p>輸入帳號後，在輸入密碼時系統會自動添加換行導致登入失敗；循環約五六次後，getty 更新畫面，等待使用者再次輸入帳號，然後再循環自動換行的詭異錯誤，永無止境。</p><a id="more"></a><h3 id="可能原因"><a href="#可能原因" class="headerlink" title="可能原因"></a>可能原因</h3><p>安裝並啟用了 gpm 這個功能，而目前已知 Kernel Version 4.15.0-44, 4.15.0-45, 4.4.0-142 均與此不相容，造成意外錯誤。<a href="https://forums.linuxmint.com/viewtopic.php?p=1591640&sid=61f374f059667a24c1d8a0a0d750d62b#p1591640" target="_blank" rel="noopener">[1]</a>, <a href="https://bugs.launchpad.net/ubuntu/+source/gpm/+bug/1814261" target="_blank" rel="noopener">[2]</a></p><h3 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h3><ol><li>升級或降級 Kernel Version</li><li>解除安裝 gpm 及相關套件</li></ol><h3 id="解決流程"><a href="#解決流程" class="headerlink" title="解決流程"></a>解決流程</h3><p>由於常規登入已無法使用，因此必須在 GRUB 介面選擇進階開機並選擇含有 Recovery 字眼的選項開機，接著選用 root 操作，就能以 root 權限進入熟悉的終端機介面了。</p><p><img src="https://i.imgur.com/Cug93zC.png" alt=""><br><img src="https://i.imgur.com/HqICBle.png" alt=""><br><img src="https://i.imgur.com/s8hD7Ik.png" alt=""></p><p>而這裡我採取的是<strong>第 2 個</strong>解決方法，選用原因純粹相對單純。</p><pre><code class="bash">apt remove gpmapt autoremovereboot</code></pre><p>接著以常規開機便能登入了。</p><p>[size=8][color=#3333]( 但是這裡我又遇到另一個問題了，登入後 tty 自動重設的怪問題，但是在文字閃過瞬間是有看到最後登入紀錄的，表示有登入成功，只是不明原因自動 exit shell 或是 restart getty，詳細是什麼情況還有待解決。)<br>( 如果成功解決的話就會有下篇筆記 )[/color][/size]</p><h3 id="參考文章"><a href="#參考文章" class="headerlink" title="參考文章"></a>參考文章</h3><ol><li><a href="https://forums.linuxmint.com/viewtopic.php?t=287366" target="_blank" rel="noopener">Unable to login on virtual terminals: Entering username “auto-enters” blank passwords; gretty crashing - Linux Mint Forums</a></li><li><a href="https://bugs.launchpad.net/ubuntu/+source/gpm/+bug/1814261" target="_blank" rel="noopener">Bug #1814261 “gpm prevents loging to the console: spurious “Ente…” : Bugs : gpm package : Ubuntu</a></li></ol>]]></content>
       
       
       <categories>
           
           <category> 程式 </category>
           
-          <category> 網頁 </category>
+          <category> Linux </category>
           
       </categories>
       
       
         <tags>
             
-            <tag> html </tag>
+            <tag> Linux </tag>
             
-            <tag> js </tag>
+            <tag> gpm </tag>
             
         </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>Hello World</title>
-      <link href="/blog/2020/04/04/hello-world/"/>
-      <url>/blog/2020/04/04/hello-world/</url>
-      
-        <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>]]></content>
-      
-      
       
     </entry>
     
