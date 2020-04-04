@@ -4,13 +4,29 @@
   
     
     <entry>
-      <title>newpost123</title>
+      <title>標題</title>
       <link href="/blog/2020/04/04/newpost123/"/>
       <url>/blog/2020/04/04/newpost123/</url>
       
-        <content type="html"><![CDATA[]]></content>
+        <content type="html"><![CDATA[<h2 id="H2-有底線"><a href="#H2-有底線" class="headerlink" title="H2 有底線"></a>H2 有底線</h2><p>不要讓程式碼區塊預覽出來！！<br>不然該篇文章的下面幾篇的預覽會遭殃XD</p><a id="more"></a><h3 id="H3-標題"><a href="#H3-標題" class="headerlink" title="H3 標題"></a>H3 標題</h3><pre><code class="bash">#!/bin/bashecho 123;</code></pre><h3 id="截斷上面的程式碼區塊"><a href="#截斷上面的程式碼區塊" class="headerlink" title="截斷上面的程式碼區塊"></a>截斷上面的程式碼區塊</h3>]]></content>
       
       
+      <categories>
+          
+          <category> 程式 </category>
+          
+          <category> 網頁 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> html </tag>
+            
+            <tag> js </tag>
+            
+        </tags>
       
     </entry>
     
