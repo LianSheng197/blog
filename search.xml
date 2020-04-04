@@ -4,18 +4,101 @@
   
     
     <entry>
-      <title>在虛擬終端機無法正常登入 -- 輸入密碼時自動換行導致無止境登入失敗</title>
-      <link href="/blog/2020/01/29/linux-login-error-with-auto-enter/"/>
-      <url>/blog/2020/01/29/linux-login-error-with-auto-enter/</url>
+      <title>在本機管理 Google Apps Script -- 使用 clasp</title>
+      <link href="/blog/2020/03/08/GAS-local-manager-clasp/"/>
+      <url>/blog/2020/03/08/GAS-local-manager-clasp/</url>
       
-        <content type="html"><![CDATA[<h3 id="環境：Ubuntu-Server-16-04-6"><a href="#環境：Ubuntu-Server-16-04-6" class="headerlink" title="環境：Ubuntu Server 16.04.6"></a>環境：Ubuntu Server 16.04.6</h3><h3 id="大致狀況"><a href="#大致狀況" class="headerlink" title="大致狀況"></a>大致狀況</h3><p>輸入帳號後，在輸入密碼時系統會自動添加換行導致登入失敗；循環約五六次後，getty 更新畫面，等待使用者再次輸入帳號，然後再循環自動換行的詭異錯誤，永無止境。</p><a id="more"></a><h3 id="可能原因"><a href="#可能原因" class="headerlink" title="可能原因"></a>可能原因</h3><p>安裝並啟用了 gpm 這個功能，而目前已知 Kernel Version 4.15.0-44, 4.15.0-45, 4.4.0-142 均與此不相容，造成意外錯誤。<a href="https://forums.linuxmint.com/viewtopic.php?p=1591640&sid=61f374f059667a24c1d8a0a0d750d62b#p1591640" target="_blank" rel="noopener">[1]</a>, <a href="https://bugs.launchpad.net/ubuntu/+source/gpm/+bug/1814261" target="_blank" rel="noopener">[2]</a></p><h3 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h3><ol><li>升級或降級 Kernel Version</li><li>解除安裝 gpm 及相關套件</li></ol><h3 id="解決流程"><a href="#解決流程" class="headerlink" title="解決流程"></a>解決流程</h3><p>由於常規登入已無法使用，因此必須在 GRUB 介面選擇進階開機並選擇含有 Recovery 字眼的選項開機，接著選用 root 操作，就能以 root 權限進入熟悉的終端機介面了。</p><p><img src="https://i.imgur.com/Cug93zC.png" alt=""><br><img src="https://i.imgur.com/HqICBle.png" alt=""><br><img src="https://i.imgur.com/s8hD7Ik.png" alt=""></p><p>而這裡我採取的是<strong>第 2 個</strong>解決方法，選用原因純粹相對單純。</p><pre><code class="bash">apt remove gpmapt autoremovereboot</code></pre><p>接著以常規開機便能登入了。</p><p>[size=8][color=#3333]( 但是這裡我又遇到另一個問題了，登入後 tty 自動重設的怪問題，但是在文字閃過瞬間是有看到最後登入紀錄的，表示有登入成功，只是不明原因自動 exit shell 或是 restart getty，詳細是什麼情況還有待解決。)<br>( 如果成功解決的話就會有下篇筆記 )[/color][/size]</p><h3 id="參考文章"><a href="#參考文章" class="headerlink" title="參考文章"></a>參考文章</h3><ol><li><a href="https://forums.linuxmint.com/viewtopic.php?t=287366" target="_blank" rel="noopener">Unable to login on virtual terminals: Entering username “auto-enters” blank passwords; gretty crashing - Linux Mint Forums</a></li><li><a href="https://bugs.launchpad.net/ubuntu/+source/gpm/+bug/1814261" target="_blank" rel="noopener">Bug #1814261 “gpm prevents loging to the console: spurious “Ente…” : Bugs : gpm package : Ubuntu</a></li></ol>]]></content>
+        <content type="html"><![CDATA[<h3 id="I-什麼情況要用這個東西？"><a href="#I-什麼情況要用這個東西？" class="headerlink" title="I. 什麼情況要用這個東西？"></a>I. 什麼情況要用這個東西？</h3><ul><li>覺得原本的網頁編輯器不好用</li><li>想用習慣的環境開發</li><li>開發時沒做版控會死www</li></ul><p>符合上述其一，那你就可以考慮用這東西。</p><a id="more"></a><h3 id="II-主要功能"><a href="#II-主要功能" class="headerlink" title="II. 主要功能"></a>II. 主要功能</h3><ul><li>離線編輯</li><li>建立、更新、查看、部署腳本</li></ul><h3 id="III-要求"><a href="#III-要求" class="headerlink" title="III. 要求"></a>III. 要求</h3><ul><li>Node.js ^4.7.4<br><a href="https://nodejs.org/en/download/" target="_blank" rel="noopener">https://nodejs.org/en/download/</a></li></ul><h3 id="1-安裝"><a href="#1-安裝" class="headerlink" title="1. 安裝"></a>1. 安裝</h3><pre><code class="bash">npm install -g @google/clasp</code></pre><p><strong>注意：</strong><br>可能會有缺少相依套件的問題，需自行補安裝。<br><img src="https://i.imgur.com/zRq4cQM.png" alt=""><br>以上圖爲例：</p><pre><code class="bash">npm install -g inquirer@latest</code></pre><p>接著，確保一切路徑都沒問題後，就能全域使用 <code>clasp</code> 了</p><h3 id="2-登入"><a href="#2-登入" class="headerlink" title="2. 登入"></a>2. 登入</h3><p>在做一切腳本編輯之前，當然要先登入你的帳號（不然怎麽同步？）</p><pre><code class="bash">clasp login</code></pre><p><img src="https://i.imgur.com/ogau2Lo.png" alt=""></p><p>接著會直接新開一個網頁，是熟悉的登入界面<br><img src="https://i.imgur.com/eVpVtvu.png" alt=""></p><p>那這樣就完成登入了。<br>註：預設的 credentials 存在 <code>~/.clasprc.json</code>。</p><h3 id="3-1-建立專案"><a href="#3-1-建立專案" class="headerlink" title="3-1. 建立專案"></a>3-1. 建立專案</h3><pre><code class="bash">clasp create [標題] # 備註：我目前還不確定這個標題具體是幹嘛的... # 因爲建立後，從網頁上看到的專案名是我的電腦帳號名...</code></pre><p>每次建立時都會問你這個專案是給什麼東西用的：<br><img src="https://i.imgur.com/FrD2dfL.png" alt=""></p><p>目前共有七種類型：</p><ol><li><strong>standalone</strong> - 獨立的。跟直接開 GAS 檔案沒兩樣。</li><li><strong>docs</strong> - Google 文件 &gt; 工具 &gt; 指令碼編輯器</li><li><strong>sheets</strong> -  Google 試算表 &gt; 工具 &gt; 指令碼編輯器</li><li><strong>slides</strong> -  Google 簡報 &gt; 工具 &gt; 指令碼編輯器</li><li><strong>forms</strong> - Google 表單 &gt; 更多選項 &gt; 指令碼編輯器</li><li><strong>webapp</strong> - GAS &gt; 發佈 &gt; 部署爲網路應用程式</li><li><strong>api</strong> - GAS &gt; 發佈 &gt; 以 API 可執行檔形式部署</li></ol><p>然後可能會看到這個訊息（如果是第一次用 Google Apps Script API 的話，這是正常的）<br><img src="https://i.imgur.com/hqhuEyF.png" alt=""></p><p>那必須自行前往這個網頁：<a href="https://script.google.com/home/usersettings" target="_blank" rel="noopener">https://script.google.com/home/usersettings</a><br>然後啓用 Google Apps Script API<br><img src="https://i.imgur.com/QmR94Yzh.png" alt=""></p><p>接著再重新執行一次，便能建立成功。<br><img src="https://i.imgur.com/jRwYz5d.png" alt=""></p><p><strong>注意：</strong><br> ＊同一目錄只能擁有一個專案。<br>  （專案檔爲 <code>.clasp.json</code>）</p><p>＊clasp 提供以目錄控管個別檔案的功能，以下是官方文件說明的對應關係：</p><pre><code># On script.google.com:├── tests/slides.gs└── tests/sheets.gs# Locally:├── tests/│   ├─ slides.gs│   └─ sheets.gs</code></pre><p>因此，礙於這個功能，衍生了一個限制 – 如果在其子目錄下試圖再建立一個專案，則會告知 “Nested clasp projects are not supported.”（不支援巢狀專案）</p><p>如果要管理多個專案則必須…</p><ol><li>採用同級目錄：<pre><code>├── Prj01/│   ├─ foo.gs│   └─ bar.gs└── Prj02/ └─ hakunamatata.gs</code></pre></li><li>編輯 <code>.claspignore</code> 。以下方結構舉例：<pre><code>└── Prj01/ ├─ Prj02/ ├─ foo.gs ├─ bar.gs └─ .claspignore</code></pre>它只是一個文字檔，因此可以透過簡單的指令達成：<pre><code class="bash">echo &quot;Prj02&quot; &gt;&gt; .claspignore</code></pre>此時就可以在 <code>Prj02/</code> 內建立專案了。</li></ol><h3 id="3-2-複製現有專案"><a href="#3-2-複製現有專案" class="headerlink" title="3-2. 複製現有專案"></a>3-2. 複製現有專案</h3><p>如果想同步某一個專案的話，先取得指令碼 ID，然後執行：</p><pre><code class="bash"># GAS &gt; 檔案 &gt; 專案屬性 &gt; 指令碼 ID# 或從網址取得 https://script.google.com/d/&lt;指令碼 ID&gt;/editclasp clone &lt;指令碼 ID&gt;</code></pre><p><img src="https://i.imgur.com/TCGgCCg.png" alt=""></p><h3 id="3-3-（同步）下載專案"><a href="#3-3-（同步）下載專案" class="headerlink" title="3-3. （同步）下載專案"></a>3-3. （同步）下載專案</h3><pre><code class="bash">clasp pull</code></pre><h3 id="3-4-（同步）上傳專案"><a href="#3-4-（同步）上傳專案" class="headerlink" title="3-4. （同步）上傳專案"></a>3-4. （同步）上傳專案</h3><pre><code class="bash">clasp push</code></pre><h3 id="4-1-取得專案所有版本"><a href="#4-1-取得專案所有版本" class="headerlink" title="4-1. 取得專案所有版本"></a>4-1. 取得專案所有版本</h3><pre><code class="bash">clasp versions</code></pre><p>這裡將會列出所有版本與對應描述。<br>從網頁上（GAS &gt; 檔案 &gt; 管理版本）能看到十分相似的資訊。</p><h3 id="4-2-建立新版本（類似-commit）"><a href="#4-2-建立新版本（類似-commit）" class="headerlink" title="4-2. 建立新版本（類似 commit）"></a>4-2. 建立新版本（類似 commit）</h3><pre><code class="bash"># 強烈建議版本描述不要留空！# 有用過 GAS 的話，應該知道它的「版本」跟普通軟體開發的「版本」概念有些落差...clasp version [版本描述]</code></pre><h3 id="4-3-新增部署（類似-branch）"><a href="#4-3-新增部署（類似-branch）" class="headerlink" title="4-3. 新增部署（類似 branch）"></a>4-3. 新增部署（類似 branch）</h3><pre><code class="bash"># 我完全不知道後面加 [version] [description] 跟沒加有什麼差別 Orz# 大概是下圖的 Version 那個部分吧（不過我試時沒有成功就是@@）clasp deploy [version] [description]</code></pre><p>這裡所謂的新增部署等於從網頁操作（GAS &gt; 發佈 &gt; 從資訊清單部署 &gt; Create）<br><img src="https://i.imgur.com/IJhBohE.png" alt=""></p><h3 id="4-4-列出所有部署"><a href="#4-4-列出所有部署" class="headerlink" title="4-4. 列出所有部署"></a>4-4. 列出所有部署</h3><pre><code class="bash">clasp deployments</code></pre><p>執行後會顯示這種格式的訊息：</p><pre><code class="text">4 Deployments.- &lt;Deployment ID - 1&gt; @HEAD - &lt;Deployment ID - 2&gt; @&lt;版本號&gt; - web app meta-version- &lt;Deployment ID - 3&gt; @&lt;版本號&gt; - &lt;Deployment ID - 4&gt; @&lt;版本號&gt;</code></pre><h3 id="4-5-刪除部署"><a href="#4-5-刪除部署" class="headerlink" title="4-5. 刪除部署"></a>4-5. 刪除部署</h3><pre><code class="bash"># &lt;deploymentId&gt; 從步驟 4-4 取得clasp undeploy &lt;deploymentId&gt;</code></pre><h3 id="5-用原本的編輯器開啓該專案"><a href="#5-用原本的編輯器開啓該專案" class="headerlink" title="5. 用原本的編輯器開啓該專案"></a>5. 用原本的編輯器開啓該專案</h3><pre><code class="bash">clasp open</code></pre><hr><p>備註：  </p><ul><li>本文僅列出基本用法，還有一堆進階或衍生的用法沒有列出。（太多啦= =）  </li><li>本文可能含有一些錯誤或描述不周。</li></ul><hr><p>參考：</p><ul><li>官方文件：<a href="https://developers.google.com/apps-script/guides/clasp" target="_blank" rel="noopener">Command Line Interface using clasp</a></li></ul>]]></content>
       
       
       <categories>
           
           <category> 程式 </category>
           
-          <category> Linux </category>
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> GAS </tag>
+            
+            <tag> js </tag>
+            
+            <tag> clasp </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Userscript: 提高腳本開發效率 - 使用外部編輯器</title>
+      <link href="/blog/2020/02/23/userscript-tampermonkey-using-external-editor/"/>
+      <url>/blog/2020/02/23/userscript-tampermonkey-using-external-editor/</url>
+      
+        <content type="html"><![CDATA[<p>撰寫腳本時，若想提高生產效率，那麼有些步驟可以自動化。</p><a id="more"></a><p>例如：</p><ul><li><p><strong>連結軟體原始碼代管服務平台，使用 webhook 自動更新腳本</strong><br>^ 這裡細節就不提了，直接上官方教學：<a href="https://greasyfork.org/zh-TW/users/webhook-info" target="_blank" rel="noopener">https://greasyfork.org/zh-TW/users/webhook-info</a></p></li><li><p><strong>使用外部編輯器</strong><br>  ^ 如果覺得原本的編輯器實在難用的話，這能有效擺脫原生附帶的編輯器。<br>  ^ 本文重點，詳見下方教學<strong>（以 Chrome + Tampermonkey + Greasyfork 爲例）</strong></p></li></ul><p><img src="src" alt=""></p><hr><h3 id="Step-1-在原編輯器內新增一個腳本，檔頭參數加入這行"><a href="#Step-1-在原編輯器內新增一個腳本，檔頭參數加入這行" class="headerlink" title="Step 1. 在原編輯器內新增一個腳本，檔頭參數加入這行"></a>Step 1. 在原編輯器內新增一個腳本，檔頭參數加入這行</h3><p>(Windows)</p><pre><code class="js">// @require      file://C:\path\to\your\userscript.user.js</code></pre><p>(Mac, Linux)</p><pre><code class="js">// @require      file:///path/to/your/userscript.user.js</code></pre><p>像這樣<br><img src="https://i.imgur.com/CYYf3Za.png" alt=""></p><p>細節備註：</p><ul><li>當然也可以直接在原腳本內加入 @require，不過鑑於更新方便，建議還是另存個腳本。</li><li>可省略大部分參數，但是必須要有 name（識別用）、include / match（頁面觸發用）、grant（若腳本有用到則不可少）、require（這不用多說了）</li><li>該新增腳本只需要有檔頭參數即可，在 ==UserScript== 外的所有 JavaScript 語法將被忽略。</li><li>存檔後，就可以把這個頁面關掉了。</li></ul><h3 id="Step-2-確保開啓允許存取本地檔案的權限"><a href="#Step-2-確保開啓允許存取本地檔案的權限" class="headerlink" title="Step 2. 確保開啓允許存取本地檔案的權限"></a>Step 2. 確保開啓允許存取本地檔案的權限</h3><p>到 Tampermonkey 的附加元件設定，可透過右鍵選擇管理附加元件快速抵達該頁<br><img src="https://i.imgur.com/SMdcSG6.png" alt=""></p><p>然後確保開啓這個功能<br><img src="https://i.imgur.com/GIRgsfb.png" alt=""></p><h3 id="Step-3-接著就能爽爽用你喜歡的編輯器了"><a href="#Step-3-接著就能爽爽用你喜歡的編輯器了" class="headerlink" title="Step 3. 接著就能爽爽用你喜歡的編輯器了~"></a>Step 3. 接著就能爽爽用你喜歡的編輯器了~</h3><p>像這樣（這裡我是使用 vscode，vscode 真香）<br><img src="https://i.imgur.com/lRexwZLh.png" alt=""></p><h3 id="注意！！"><a href="#注意！！" class="headerlink" title="注意！！"></a>注意！！</h3><ul><li><p><strong>Step 1</strong> 新增的那列參數只能存在已安裝的腳本中，<strong>它不能被發佈</strong>。<br>若嘗試發佈的話，則會導致失敗。<br>像這樣…<br><img src="https://i.imgur.com/OHerZou.png" alt=""><br>^ 上圖爲 <strong>Github webhook</strong> recent deliveries 的 Response，若腳本正常更新，則紅框不該有東西<br>^ 若遇到這種問題，則會造成 Repo 與 Greasyfork 的版本不一致。<br>^ 必須修正後重新 commit 才能再次觸發 webhook<br>^ <del>我才不會說我在這個問題上多摸了半個多小時才發現問題在哪裏</del></p></li><li><p>由於 <strong>Step 1</strong> 的參數不能上傳，因此在 Greasyfork 上的版本就不可能存在這個參數。<br>若一開始就在原腳本添加該參數的話，當更新腳本時就會導致這個參數被刪除。（畢竟腳本更新是整個覆寫）<br>這樣每次更新後就要回去開原生編輯器把參數加回去，非常麻煩。<br>這就是爲什麼在 Step 1 時，我建議直接新增一個腳本。</p></li></ul><p><img src="src" alt=""></p><hr><h3 id="參考："><a href="#參考：" class="headerlink" title="參考："></a>參考：</h3><ul><li><a href="https://stackoverflow.com/questions/49509874/how-to-update-tampermonkey-script-to-a-local-file-programmatically" target="_blank" rel="noopener">How to update tampermonkey script to a local file programmatically?</a></li><li><a href="https://en.wikipedia.org/wiki/File_URI_scheme#Examples" target="_blank" rel="noopener">file URI scheme</a></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 程式 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> js </tag>
+            
+            <tag> userscript </tag>
+            
+            <tag> tampermonkey </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Google Apps Script 提供新的 JavaScript 解析引擎 (V8)！</title>
+      <link href="/blog/2020/02/13/GAS-new-js-engine-v8/"/>
+      <url>/blog/2020/02/13/GAS-new-js-engine-v8/</url>
+      
+        <content type="html"><![CDATA[<img src="https://michigan.it.umich.edu/news/wp-content/uploads/2019/02/google-apps-script-1.png" height="200px"><a id="more"></a><hr><p><strong>原本使用：</strong><a href="https://zh.wikipedia.org/wiki/Rhino_(JavaScript%E5%BC%95%E6%93%8E)" target="_blank" rel="noopener">Rhino</a><br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Inicio_de_ldp_para_260px50px_moziyarinocrnt.jpg/220px-Inicio_de_ldp_para_260px50px_moziyarinocrnt.jpg" alt=""></p><p><strong>全新：</strong><a href="https://zh.wikipedia.org/wiki/V8_(JavaScript%E5%BC%95%E6%93%8E)" target="_blank" rel="noopener">V8</a><br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/V8_JavaScript_engine_logo_2.svg/100px-V8_JavaScript_engine_logo_2.svg.png" alt=""></p><hr><h3 id="新增功能？"><a href="#新增功能？" class="headerlink" title="新增功能？"></a>新增功能？</h3><p>現代 ECMAScript 語法。（如 <code>let</code>, <code>const</code>, <code>() =&gt; {}</code> 等等，但仍未支援<a href="https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Template_literals" target="_blank" rel="noopener"> ES6 的樣板語法</a>）</p><p>參考：<a href="https://developers.google.com/apps-script/guides/v8-runtime#modern_ecmascript_syntax" target="_blank" rel="noopener">Modern ECMAScript syntax</a></p><h3 id="不相容或棄用語法？"><a href="#不相容或棄用語法？" class="headerlink" title="不相容或棄用語法？"></a>不相容或棄用語法？</h3><p>極少。（熟悉現代語法的話，基本上是無痛轉移）</p><p>參考：<a href="https://developers.google.com/apps-script/guides/v8-runtime/migration#incompatibilities" target="_blank" rel="noopener">Incompatibilities</a></p><h3 id="如何切換？"><a href="#如何切換？" class="headerlink" title="如何切換？"></a>如何切換？</h3><p>目前由使用者自行更換（隨時可以修改）：<br><img src="https://i.imgur.com/yNfu88g.png" alt=""></p><p>（切換後需要重新發佈）</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 程式 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> GAS </tag>
+            
+            <tag> js </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>在虛擬終端機無法正常登入 -- 輸入密碼時自動換行導致無止境登入失敗</title>
+      <link href="/blog/2020/01/29/linux-login-error-with-auto-enter/"/>
+      <url>/blog/2020/01/29/linux-login-error-with-auto-enter/</url>
+      
+        <content type="html"><![CDATA[<h3 id="環境：Ubuntu-Server-16-04-6"><a href="#環境：Ubuntu-Server-16-04-6" class="headerlink" title="環境：Ubuntu Server 16.04.6"></a>環境：Ubuntu Server 16.04.6</h3><h3 id="大致狀況"><a href="#大致狀況" class="headerlink" title="大致狀況"></a>大致狀況</h3><p>輸入帳號後，在輸入密碼時系統會自動添加換行導致登入失敗；循環約五六次後，getty 更新畫面，等待使用者再次輸入帳號，然後再循環自動換行的詭異錯誤，永無止境。</p><a id="more"></a><h3 id="可能原因"><a href="#可能原因" class="headerlink" title="可能原因"></a>可能原因</h3><p>安裝並啟用了 gpm 這個功能，而目前已知 Kernel Version 4.15.0-44, 4.15.0-45, 4.4.0-142 均與此不相容，造成意外錯誤。<a href="https://forums.linuxmint.com/viewtopic.php?p=1591640&sid=61f374f059667a24c1d8a0a0d750d62b#p1591640" target="_blank" rel="noopener">[1]</a>, <a href="https://bugs.launchpad.net/ubuntu/+source/gpm/+bug/1814261" target="_blank" rel="noopener">[2]</a></p><h3 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h3><ol><li>升級或降級 Kernel Version</li><li>解除安裝 gpm 及相關套件</li></ol><h3 id="解決流程"><a href="#解決流程" class="headerlink" title="解決流程"></a>解決流程</h3><p>由於常規登入已無法使用，因此必須在 GRUB 介面選擇進階開機並選擇含有 Recovery 字眼的選項開機，接著選用 root 操作，就能以 root 權限進入熟悉的終端機介面了。</p><p><img src="https://i.imgur.com/Cug93zC.png" alt=""><br><img src="https://i.imgur.com/HqICBle.png" alt=""><br><img src="https://i.imgur.com/s8hD7Ik.png" alt=""></p><p>而這裡我採取的是<strong>第 2 個</strong>解決方法，選用原因純粹相對單純。</p><pre><code class="bash">apt remove gpmapt autoremovereboot</code></pre><p>接著以常規開機便能登入了。</p><p>( 但是這裡我又遇到另一個問題了，登入後 tty 自動重設的怪問題，但是在文字閃過瞬間是有看到最後登入紀錄的，表示有登入成功，只是不明原因自動 exit shell 或是 restart getty，詳細是什麼情況還有待解決。)<br>( 如果成功解決的話就會有下篇筆記 )</p><h3 id="參考文章"><a href="#參考文章" class="headerlink" title="參考文章"></a>參考文章</h3><ol><li><a href="https://forums.linuxmint.com/viewtopic.php?t=287366" target="_blank" rel="noopener">Unable to login on virtual terminals: Entering username “auto-enters” blank passwords; gretty crashing - Linux Mint Forums</a></li><li><a href="https://bugs.launchpad.net/ubuntu/+source/gpm/+bug/1814261" target="_blank" rel="noopener">Bug #1814261 “gpm prevents loging to the console: spurious “Ente…” : Bugs : gpm package : Ubuntu</a></li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> 程式 </category>
           
       </categories>
       

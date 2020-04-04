@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><meta name="baidu-site-verification"><title>Userscript: 提高腳本開發效率 - 使用外部編輯器 | LianSheng</title><link rel="stylesheet" type="text/css" href="/blog/css/style.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.png"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><meta name="generator" content="Hexo 4.2.0"></head><link rel="stylesheet" type="text/css" href="/blog/plugins/prettify/doxy.css"><script type="text/javascript" src="/blog/js/ready.js" async></script><body><div class="mobile-head" id="mobile-head"><div class="navbar-icon"><span></span><span></span><span></span></div><div class="navbar-title"><a href="/">Just for fun</a></div><div class="navbar-search"><!--= show a circle here--></div></div><div class="h-wrapper" id="menu"><nav class="h-head box"><div class="m-hdimg"><a class="hdimg img" href="/blog/"><img class="nofancybox" src="/blog/img/profile.jpg" width="128" height="128"></a><h1 class="ttl"><a href="/blog/">LianSheng</a></h1></div><p class="m-desc">浮潛於資訊中，深知無力...<br>即便如此仍不願放棄。</p><div class="m-nav"><ul><li><span class="dot">●</span><a href="/blog/archives/">歸檔</a></li><li><span class="dot">●</span><a href="/blog/categories/">分類</a></li><li><span class="dot">●</span><a href="/blog/tags/">標籤</a></li><li><span class="dot">●</span><a href="/blog/about/">關於</a></li><li><span class="dot">●</span><a href="/blog/./"></a></li><li><span class="dot">●</span><a href="/blog/./"></a></li><li class="m-sch"><form class="form" id="j-formsch" method="get"><input class="txt" type="text" id="local-search-input" name="q" value="搜索" onfocus="if(this.value=='搜索'){this.value='';}" onblur="if(this.value==''){this.value='搜索';}"><input type="text" style="display:none;"></form></li></ul><div id="local-search-result"></div></div></nav></div><div id="back2Top"><a class="fa fa-arrow-up" title="Back to top" href="#"></a></div><div class="box" id="container"><div class="l-wrapper"><div class="l-content box"><div class="l-post l-post-art"><article class="p-art"><div class="p-header box"><h1 class="p-title">Userscript: 提高腳本開發效率 - 使用外部編輯器</h1><div class="p-info"><span class="p-date"><i class="fa fa-calendar"></i><a href="/blog/2020/02/23/userscript-tampermonkey-using-external-editor/">2020-02-23</a></span><span class="p-category"><i class="fa fa-folder"></i><a href="/blog/categories/%E7%A8%8B%E5%BC%8F/">程式</a></span></div></div><div class="p-content"><p>撰寫腳本時，若想提高生產效率，那麼有些步驟可以自動化。</p>
+<a id="more"></a>
+
+<p>例如：</p>
+<ul>
+<li><p><strong>連結軟體原始碼代管服務平台，使用 webhook 自動更新腳本</strong><br>^ 這裡細節就不提了，直接上官方教學：<a href="https://greasyfork.org/zh-TW/users/webhook-info" target="_blank" rel="noopener">https://greasyfork.org/zh-TW/users/webhook-info</a></p>
+</li>
+<li><p><strong>使用外部編輯器</strong><br>  ^ 如果覺得原本的編輯器實在難用的話，這能有效擺脫原生附帶的編輯器。<br>  ^ 本文重點，詳見下方教學<strong>（以 Chrome + Tampermonkey + Greasyfork 爲例）</strong></p>
+</li>
+</ul>
+<p><img src="src" alt=""></p>
+<hr>
+<h3 id="Step-1-在原編輯器內新增一個腳本，檔頭參數加入這行"><a href="#Step-1-在原編輯器內新增一個腳本，檔頭參數加入這行" class="headerlink" title="Step 1. 在原編輯器內新增一個腳本，檔頭參數加入這行"></a>Step 1. 在原編輯器內新增一個腳本，檔頭參數加入這行</h3><p>(Windows)</p>
+<pre><code class="js">// @require      file://C:\path\to\your\userscript.user.js</code></pre>
+<p>(Mac, Linux)</p>
+<pre><code class="js">// @require      file:///path/to/your/userscript.user.js</code></pre>
+<p>像這樣<br><img src="https://i.imgur.com/CYYf3Za.png" alt=""></p>
+<p>細節備註：</p>
+<ul>
+<li>當然也可以直接在原腳本內加入 @require，不過鑑於更新方便，建議還是另存個腳本。</li>
+<li>可省略大部分參數，但是必須要有 name（識別用）、include / match（頁面觸發用）、grant（若腳本有用到則不可少）、require（這不用多說了）</li>
+<li>該新增腳本只需要有檔頭參數即可，在 ==UserScript== 外的所有 JavaScript 語法將被忽略。</li>
+<li>存檔後，就可以把這個頁面關掉了。</li>
+</ul>
+<h3 id="Step-2-確保開啓允許存取本地檔案的權限"><a href="#Step-2-確保開啓允許存取本地檔案的權限" class="headerlink" title="Step 2. 確保開啓允許存取本地檔案的權限"></a>Step 2. 確保開啓允許存取本地檔案的權限</h3><p>到 Tampermonkey 的附加元件設定，可透過右鍵選擇管理附加元件快速抵達該頁<br><img src="https://i.imgur.com/SMdcSG6.png" alt=""></p>
+<p>然後確保開啓這個功能<br><img src="https://i.imgur.com/GIRgsfb.png" alt=""></p>
+<h3 id="Step-3-接著就能爽爽用你喜歡的編輯器了"><a href="#Step-3-接著就能爽爽用你喜歡的編輯器了" class="headerlink" title="Step 3. 接著就能爽爽用你喜歡的編輯器了~"></a>Step 3. 接著就能爽爽用你喜歡的編輯器了~</h3><p>像這樣（這裡我是使用 vscode，vscode 真香）<br><img src="https://i.imgur.com/lRexwZLh.png" alt=""></p>
+<h3 id="注意！！"><a href="#注意！！" class="headerlink" title="注意！！"></a>注意！！</h3><ul>
+<li><p><strong>Step 1</strong> 新增的那列參數只能存在已安裝的腳本中，<strong>它不能被發佈</strong>。<br>若嘗試發佈的話，則會導致失敗。<br>像這樣…<br><img src="https://i.imgur.com/OHerZou.png" alt=""><br>^ 上圖爲 <strong>Github webhook</strong> recent deliveries 的 Response，若腳本正常更新，則紅框不該有東西<br>^ 若遇到這種問題，則會造成 Repo 與 Greasyfork 的版本不一致。<br>^ 必須修正後重新 commit 才能再次觸發 webhook<br>^ <del>我才不會說我在這個問題上多摸了半個多小時才發現問題在哪裏</del></p>
+</li>
+<li><p>由於 <strong>Step 1</strong> 的參數不能上傳，因此在 Greasyfork 上的版本就不可能存在這個參數。<br>若一開始就在原腳本添加該參數的話，當更新腳本時就會導致這個參數被刪除。（畢竟腳本更新是整個覆寫）<br>這樣每次更新後就要回去開原生編輯器把參數加回去，非常麻煩。<br>這就是爲什麼在 Step 1 時，我建議直接新增一個腳本。</p>
+</li>
+</ul>
+<p><img src="src" alt=""></p>
+<hr>
+<h3 id="參考："><a href="#參考：" class="headerlink" title="參考："></a>參考：</h3><ul>
+<li><a href="https://stackoverflow.com/questions/49509874/how-to-update-tampermonkey-script-to-a-local-file-programmatically" target="_blank" rel="noopener">How to update tampermonkey script to a local file programmatically?</a></li>
+<li><a href="https://en.wikipedia.org/wiki/File_URI_scheme#Examples" target="_blank" rel="noopener">file URI scheme</a></li>
+</ul>
+</div></article><div class="p-info box"><span class="p-tags"><i class="fa fa-tags"></i><a href="/blog/tags/js/">js</a><a href="/blog/tags/userscript/">userscript</a><a href="/blog/tags/tampermonkey/">tampermonkey</a></span></div><aside id="toc"><div class="toc-title">目录</div><nav><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-1-在原編輯器內新增一個腳本，檔頭參數加入這行"><span class="toc-number">1.</span> <span class="toc-text">Step 1. 在原編輯器內新增一個腳本，檔頭參數加入這行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-2-確保開啓允許存取本地檔案的權限"><span class="toc-number">2.</span> <span class="toc-text">Step 2. 確保開啓允許存取本地檔案的權限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-3-接著就能爽爽用你喜歡的編輯器了"><span class="toc-number">3.</span> <span class="toc-text">Step 3. 接著就能爽爽用你喜歡的編輯器了~</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注意！！"><span class="toc-number">4.</span> <span class="toc-text">注意！！</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#參考："><span class="toc-number">5.</span> <span class="toc-text">參考：</span></a></li></ol></nav></aside></div><section class="p-ext"><div class="l-pager l-pager-dtl box"><a class="prev" href="/blog/2020/03/08/GAS-local-manager-clasp/">&lt; 在本機管理 Google Apps Script -- 使用 clasp</a><a class="next" href="/blog/2020/02/13/GAS-new-js-engine-v8/">Google Apps Script 提供新的 JavaScript 解析引擎 (V8)！ &gt;</a></div><div id="valine-comment"><style type="text/css">.v * { color: #CECECE; }
+.v a { color: #0F9FB4; }
+.v a:hover { color: #216C73; }
+.v li { list-style: inherit; }
+.v .vwrap { border: 1px solid #223441; border-radius: 0; }
+.v .vwrap:hover { box-shadow: 0 0 6px 1px #223441; }
+.v .vbtn { border-radius: 0; color: #cecece; background: none; }
+.v .vlist .vcard .vh { border-bottom-color: #293D4E; }
+.v .vwrap .vheader .vinput { border-bottom-color: #223441; }
+.v .vwrap .vheader .vinput:focus { border-bottom-color: #339EB4; }
+.v code, .v pre,.v .vlist .vcard .vhead .vsys { background: #203240; }
+.v code, .v pre { color: #F0F0F0; font-size: 95%; }
+.v .vlist .vcard .vcontent.expand:before { background: linear-gradient(180deg,hsla(206,33%,19%,0),hsla(206,33%,19%,.9)); }
+.v .vlist .vcard .vcontent.expand:after { background: hsla(206,33%,19%,.9); }</style><div id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' == true ? true : false;
+var verify = 'false' == true ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'',
+  appKey:'',
+  lang: 'zh-TW',
+  placeholder:'ヾﾉ≧∀≦)o Come on, say something...',
+  avatar:'identicon',
+  guest_info:guest_info,
+  pageSize:'10'
+})</script></div></section><footer><p>Copyright © 2020 - 2020 <a href="/blog/." rel="nofollow">LianSheng</a> | <strong><a rel="nofollow" target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></strong><br>Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a>Theme with<a rel="nofollow" target="_blank" href="https://github.com/litreily/snark-hexo"> snark.</a></p></footer></div></div></div><script type="text/javascript" src="/blog/plugins/prettify/prettify.js"></script><script type="text/javascript" src="/blog/js/search.js"></script><script type="text/javascript" src="/blog/js/top.js"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+    search_path = 'search.xml';
+}
+var path = '/blog/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/blog/js/fancybox.js?v=0.0.1" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.css"></body></html>

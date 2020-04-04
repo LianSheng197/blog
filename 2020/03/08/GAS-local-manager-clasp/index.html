@@ -1,0 +1,140 @@
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><meta name="baidu-site-verification"><title>在本機管理 Google Apps Script -- 使用 clasp | LianSheng</title><link rel="stylesheet" type="text/css" href="/blog/css/style.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.png"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><meta name="generator" content="Hexo 4.2.0"></head><link rel="stylesheet" type="text/css" href="/blog/plugins/prettify/doxy.css"><script type="text/javascript" src="/blog/js/ready.js" async></script><body><div class="mobile-head" id="mobile-head"><div class="navbar-icon"><span></span><span></span><span></span></div><div class="navbar-title"><a href="/">Just for fun</a></div><div class="navbar-search"><!--= show a circle here--></div></div><div class="h-wrapper" id="menu"><nav class="h-head box"><div class="m-hdimg"><a class="hdimg img" href="/blog/"><img class="nofancybox" src="/blog/img/profile.jpg" width="128" height="128"></a><h1 class="ttl"><a href="/blog/">LianSheng</a></h1></div><p class="m-desc">浮潛於資訊中，深知無力...<br>即便如此仍不願放棄。</p><div class="m-nav"><ul><li><span class="dot">●</span><a href="/blog/archives/">歸檔</a></li><li><span class="dot">●</span><a href="/blog/categories/">分類</a></li><li><span class="dot">●</span><a href="/blog/tags/">標籤</a></li><li><span class="dot">●</span><a href="/blog/about/">關於</a></li><li><span class="dot">●</span><a href="/blog/./"></a></li><li><span class="dot">●</span><a href="/blog/./"></a></li><li class="m-sch"><form class="form" id="j-formsch" method="get"><input class="txt" type="text" id="local-search-input" name="q" value="搜索" onfocus="if(this.value=='搜索'){this.value='';}" onblur="if(this.value==''){this.value='搜索';}"><input type="text" style="display:none;"></form></li></ul><div id="local-search-result"></div></div></nav></div><div id="back2Top"><a class="fa fa-arrow-up" title="Back to top" href="#"></a></div><div class="box" id="container"><div class="l-wrapper"><div class="l-content box"><div class="l-post l-post-art"><article class="p-art"><div class="p-header box"><h1 class="p-title">在本機管理 Google Apps Script -- 使用 clasp</h1><div class="p-info"><span class="p-date"><i class="fa fa-calendar"></i><a href="/blog/2020/03/08/GAS-local-manager-clasp/">2020-03-08</a></span><span class="p-category"><i class="fa fa-folder"></i><a href="/blog/categories/%E7%A8%8B%E5%BC%8F/">程式</a></span></div></div><div class="p-content"><h3 id="I-什麼情況要用這個東西？"><a href="#I-什麼情況要用這個東西？" class="headerlink" title="I. 什麼情況要用這個東西？"></a>I. 什麼情況要用這個東西？</h3><ul>
+<li>覺得原本的網頁編輯器不好用</li>
+<li>想用習慣的環境開發</li>
+<li>開發時沒做版控會死www</li>
+</ul>
+<p>符合上述其一，那你就可以考慮用這東西。</p>
+<a id="more"></a>
+
+<h3 id="II-主要功能"><a href="#II-主要功能" class="headerlink" title="II. 主要功能"></a>II. 主要功能</h3><ul>
+<li>離線編輯</li>
+<li>建立、更新、查看、部署腳本</li>
+</ul>
+<h3 id="III-要求"><a href="#III-要求" class="headerlink" title="III. 要求"></a>III. 要求</h3><ul>
+<li>Node.js ^4.7.4<br><a href="https://nodejs.org/en/download/" target="_blank" rel="noopener">https://nodejs.org/en/download/</a></li>
+</ul>
+<h3 id="1-安裝"><a href="#1-安裝" class="headerlink" title="1. 安裝"></a>1. 安裝</h3><pre><code class="bash">npm install -g @google/clasp</code></pre>
+<p><strong>注意：</strong><br>可能會有缺少相依套件的問題，需自行補安裝。<br><img src="https://i.imgur.com/zRq4cQM.png" alt=""><br>以上圖爲例：</p>
+<pre><code class="bash">npm install -g inquirer@latest</code></pre>
+<p>接著，確保一切路徑都沒問題後，就能全域使用 <code>clasp</code> 了</p>
+<h3 id="2-登入"><a href="#2-登入" class="headerlink" title="2. 登入"></a>2. 登入</h3><p>在做一切腳本編輯之前，當然要先登入你的帳號（不然怎麽同步？）</p>
+<pre><code class="bash">clasp login</code></pre>
+<p><img src="https://i.imgur.com/ogau2Lo.png" alt=""></p>
+<p>接著會直接新開一個網頁，是熟悉的登入界面<br><img src="https://i.imgur.com/eVpVtvu.png" alt=""></p>
+<p>那這樣就完成登入了。<br>註：預設的 credentials 存在 <code>~/.clasprc.json</code>。</p>
+<h3 id="3-1-建立專案"><a href="#3-1-建立專案" class="headerlink" title="3-1. 建立專案"></a>3-1. 建立專案</h3><pre><code class="bash">clasp create [標題] 
+# 備註：我目前還不確定這個標題具體是幹嘛的... 
+# 因爲建立後，從網頁上看到的專案名是我的電腦帳號名...</code></pre>
+<p>每次建立時都會問你這個專案是給什麼東西用的：<br><img src="https://i.imgur.com/FrD2dfL.png" alt=""></p>
+<p>目前共有七種類型：</p>
+<ol>
+<li><strong>standalone</strong> - 獨立的。跟直接開 GAS 檔案沒兩樣。</li>
+<li><strong>docs</strong> - Google 文件 &gt; 工具 &gt; 指令碼編輯器</li>
+<li><strong>sheets</strong> -  Google 試算表 &gt; 工具 &gt; 指令碼編輯器</li>
+<li><strong>slides</strong> -  Google 簡報 &gt; 工具 &gt; 指令碼編輯器</li>
+<li><strong>forms</strong> - Google 表單 &gt; 更多選項 &gt; 指令碼編輯器</li>
+<li><strong>webapp</strong> - GAS &gt; 發佈 &gt; 部署爲網路應用程式</li>
+<li><strong>api</strong> - GAS &gt; 發佈 &gt; 以 API 可執行檔形式部署</li>
+</ol>
+<p>然後可能會看到這個訊息（如果是第一次用 Google Apps Script API 的話，這是正常的）<br><img src="https://i.imgur.com/hqhuEyF.png" alt=""></p>
+<p>那必須自行前往這個網頁：<a href="https://script.google.com/home/usersettings" target="_blank" rel="noopener">https://script.google.com/home/usersettings</a><br>然後啓用 Google Apps Script API<br><img src="https://i.imgur.com/QmR94Yzh.png" alt=""></p>
+<p>接著再重新執行一次，便能建立成功。<br><img src="https://i.imgur.com/jRwYz5d.png" alt=""></p>
+<p><strong>注意：</strong><br> ＊同一目錄只能擁有一個專案。<br>  （專案檔爲 <code>.clasp.json</code>）</p>
+<p>＊clasp 提供以目錄控管個別檔案的功能，以下是官方文件說明的對應關係：</p>
+<pre><code># On script.google.com:
+├── tests/slides.gs
+└── tests/sheets.gs
+
+# Locally:
+├── tests/
+│   ├─ slides.gs
+│   └─ sheets.gs</code></pre><p>因此，礙於這個功能，衍生了一個限制 – 如果在其子目錄下試圖再建立一個專案，則會告知 “Nested clasp projects are not supported.”（不支援巢狀專案）</p>
+<p>如果要管理多個專案則必須…</p>
+<ol>
+<li>採用同級目錄：<pre><code>├── Prj01/
+│   ├─ foo.gs
+│   └─ bar.gs
+└── Prj02/
+ └─ hakunamatata.gs</code></pre></li>
+<li>編輯 <code>.claspignore</code> 。以下方結構舉例：<pre><code>└── Prj01/
+ ├─ Prj02/
+ ├─ foo.gs
+ ├─ bar.gs
+ └─ .claspignore</code></pre>它只是一個文字檔，因此可以透過簡單的指令達成：<pre><code class="bash">echo &quot;Prj02&quot; &gt;&gt; .claspignore</code></pre>
+此時就可以在 <code>Prj02/</code> 內建立專案了。</li>
+</ol>
+<h3 id="3-2-複製現有專案"><a href="#3-2-複製現有專案" class="headerlink" title="3-2. 複製現有專案"></a>3-2. 複製現有專案</h3><p>如果想同步某一個專案的話，先取得指令碼 ID，然後執行：</p>
+<pre><code class="bash"># GAS &gt; 檔案 &gt; 專案屬性 &gt; 指令碼 ID
+# 或從網址取得 https://script.google.com/d/&lt;指令碼 ID&gt;/edit
+clasp clone &lt;指令碼 ID&gt;</code></pre>
+<p><img src="https://i.imgur.com/TCGgCCg.png" alt=""></p>
+<h3 id="3-3-（同步）下載專案"><a href="#3-3-（同步）下載專案" class="headerlink" title="3-3. （同步）下載專案"></a>3-3. （同步）下載專案</h3><pre><code class="bash">clasp pull</code></pre>
+<h3 id="3-4-（同步）上傳專案"><a href="#3-4-（同步）上傳專案" class="headerlink" title="3-4. （同步）上傳專案"></a>3-4. （同步）上傳專案</h3><pre><code class="bash">clasp push</code></pre>
+<h3 id="4-1-取得專案所有版本"><a href="#4-1-取得專案所有版本" class="headerlink" title="4-1. 取得專案所有版本"></a>4-1. 取得專案所有版本</h3><pre><code class="bash">clasp versions</code></pre>
+<p>這裡將會列出所有版本與對應描述。<br>從網頁上（GAS &gt; 檔案 &gt; 管理版本）能看到十分相似的資訊。</p>
+<h3 id="4-2-建立新版本（類似-commit）"><a href="#4-2-建立新版本（類似-commit）" class="headerlink" title="4-2. 建立新版本（類似 commit）"></a>4-2. 建立新版本（類似 commit）</h3><pre><code class="bash"># 強烈建議版本描述不要留空！
+# 有用過 GAS 的話，應該知道它的「版本」跟普通軟體開發的「版本」概念有些落差...
+clasp version [版本描述]</code></pre>
+<h3 id="4-3-新增部署（類似-branch）"><a href="#4-3-新增部署（類似-branch）" class="headerlink" title="4-3. 新增部署（類似 branch）"></a>4-3. 新增部署（類似 branch）</h3><pre><code class="bash"># 我完全不知道後面加 [version] [description] 跟沒加有什麼差別 Orz
+# 大概是下圖的 Version 那個部分吧（不過我試時沒有成功就是@@）
+clasp deploy [version] [description]</code></pre>
+<p>這裡所謂的新增部署等於從網頁操作（GAS &gt; 發佈 &gt; 從資訊清單部署 &gt; Create）<br><img src="https://i.imgur.com/IJhBohE.png" alt=""></p>
+<h3 id="4-4-列出所有部署"><a href="#4-4-列出所有部署" class="headerlink" title="4-4. 列出所有部署"></a>4-4. 列出所有部署</h3><pre><code class="bash">clasp deployments</code></pre>
+<p>執行後會顯示這種格式的訊息：</p>
+<pre><code class="text">4 Deployments.
+- &lt;Deployment ID - 1&gt; @HEAD 
+- &lt;Deployment ID - 2&gt; @&lt;版本號&gt; - web app meta-version
+- &lt;Deployment ID - 3&gt; @&lt;版本號&gt; 
+- &lt;Deployment ID - 4&gt; @&lt;版本號&gt;</code></pre>
+<h3 id="4-5-刪除部署"><a href="#4-5-刪除部署" class="headerlink" title="4-5. 刪除部署"></a>4-5. 刪除部署</h3><pre><code class="bash"># &lt;deploymentId&gt; 從步驟 4-4 取得
+clasp undeploy &lt;deploymentId&gt;</code></pre>
+<h3 id="5-用原本的編輯器開啓該專案"><a href="#5-用原本的編輯器開啓該專案" class="headerlink" title="5. 用原本的編輯器開啓該專案"></a>5. 用原本的編輯器開啓該專案</h3><pre><code class="bash">clasp open</code></pre>
+<hr>
+<p>備註：  </p>
+<ul>
+<li>本文僅列出基本用法，還有一堆進階或衍生的用法沒有列出。（太多啦= =）  </li>
+<li>本文可能含有一些錯誤或描述不周。</li>
+</ul>
+<hr>
+<p>參考：</p>
+<ul>
+<li>官方文件：<a href="https://developers.google.com/apps-script/guides/clasp" target="_blank" rel="noopener">Command Line Interface using clasp</a></li>
+</ul>
+</div></article><div class="p-info box"><span class="p-tags"><i class="fa fa-tags"></i><a href="/blog/tags/GAS/">GAS</a><a href="/blog/tags/js/">js</a><a href="/blog/tags/clasp/">clasp</a></span></div><aside id="toc"><div class="toc-title">目录</div><nav><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#I-什麼情況要用這個東西？"><span class="toc-number">1.</span> <span class="toc-text">I. 什麼情況要用這個東西？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#II-主要功能"><span class="toc-number">2.</span> <span class="toc-text">II. 主要功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#III-要求"><span class="toc-number">3.</span> <span class="toc-text">III. 要求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-安裝"><span class="toc-number">4.</span> <span class="toc-text">1. 安裝</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-登入"><span class="toc-number">5.</span> <span class="toc-text">2. 登入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-建立專案"><span class="toc-number">6.</span> <span class="toc-text">3-1. 建立專案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-複製現有專案"><span class="toc-number">7.</span> <span class="toc-text">3-2. 複製現有專案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-（同步）下載專案"><span class="toc-number">8.</span> <span class="toc-text">3-3. （同步）下載專案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-（同步）上傳專案"><span class="toc-number">9.</span> <span class="toc-text">3-4. （同步）上傳專案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-取得專案所有版本"><span class="toc-number">10.</span> <span class="toc-text">4-1. 取得專案所有版本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-建立新版本（類似-commit）"><span class="toc-number">11.</span> <span class="toc-text">4-2. 建立新版本（類似 commit）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-新增部署（類似-branch）"><span class="toc-number">12.</span> <span class="toc-text">4-3. 新增部署（類似 branch）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-列出所有部署"><span class="toc-number">13.</span> <span class="toc-text">4-4. 列出所有部署</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-5-刪除部署"><span class="toc-number">14.</span> <span class="toc-text">4-5. 刪除部署</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-用原本的編輯器開啓該專案"><span class="toc-number">15.</span> <span class="toc-text">5. 用原本的編輯器開啓該專案</span></a></li></ol></nav></aside></div><section class="p-ext"><div class="l-pager l-pager-dtl box"><a class="next" href="/blog/2020/02/23/userscript-tampermonkey-using-external-editor/">Userscript: 提高腳本開發效率 - 使用外部編輯器 &gt;</a></div><div id="valine-comment"><style type="text/css">.v * { color: #CECECE; }
+.v a { color: #0F9FB4; }
+.v a:hover { color: #216C73; }
+.v li { list-style: inherit; }
+.v .vwrap { border: 1px solid #223441; border-radius: 0; }
+.v .vwrap:hover { box-shadow: 0 0 6px 1px #223441; }
+.v .vbtn { border-radius: 0; color: #cecece; background: none; }
+.v .vlist .vcard .vh { border-bottom-color: #293D4E; }
+.v .vwrap .vheader .vinput { border-bottom-color: #223441; }
+.v .vwrap .vheader .vinput:focus { border-bottom-color: #339EB4; }
+.v code, .v pre,.v .vlist .vcard .vhead .vsys { background: #203240; }
+.v code, .v pre { color: #F0F0F0; font-size: 95%; }
+.v .vlist .vcard .vcontent.expand:before { background: linear-gradient(180deg,hsla(206,33%,19%,0),hsla(206,33%,19%,.9)); }
+.v .vlist .vcard .vcontent.expand:after { background: hsla(206,33%,19%,.9); }</style><div id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' == true ? true : false;
+var verify = 'false' == true ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'',
+  appKey:'',
+  lang: 'zh-TW',
+  placeholder:'ヾﾉ≧∀≦)o Come on, say something...',
+  avatar:'identicon',
+  guest_info:guest_info,
+  pageSize:'10'
+})</script></div></section><footer><p>Copyright © 2020 - 2020 <a href="/blog/." rel="nofollow">LianSheng</a> | <strong><a rel="nofollow" target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></strong><br>Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a>Theme with<a rel="nofollow" target="_blank" href="https://github.com/litreily/snark-hexo"> snark.</a></p></footer></div></div></div><script type="text/javascript" src="/blog/plugins/prettify/prettify.js"></script><script type="text/javascript" src="/blog/js/search.js"></script><script type="text/javascript" src="/blog/js/top.js"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+    search_path = 'search.xml';
+}
+var path = '/blog/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/blog/js/fancybox.js?v=0.0.1" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.css"></body></html>
