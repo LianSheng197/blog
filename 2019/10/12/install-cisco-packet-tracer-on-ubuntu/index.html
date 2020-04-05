@@ -1,0 +1,85 @@
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><meta name="baidu-site-verification"><title>在 Ubuntu 上安裝 Cisco Packet Tracer | LianSheng</title><link rel="stylesheet" type="text/css" href="/blog/css/style.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.png"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><meta name="generator" content="Hexo 4.2.0"></head><link rel="stylesheet" type="text/css" href="/blog/plugins/prettify/doxy.css"><script type="text/javascript" src="/blog/js/ready.js" async></script><body><div class="mobile-head" id="mobile-head"><div class="navbar-icon"><span></span><span></span><span></span></div><div class="navbar-title"><a href="/">Just for fun</a></div><div class="navbar-search"><!--= show a circle here--></div></div><div class="h-wrapper" id="menu"><nav class="h-head box"><div class="m-hdimg"><a class="hdimg img" href="/blog/"><img class="nofancybox" src="/blog/img/profile.jpg" width="128" height="128"></a><h1 class="ttl"><a href="/blog/">LianSheng</a></h1></div><p class="m-desc">浮潛於資訊中，深知無力...<br>即便如此仍不願放棄。</p><div class="m-nav"><ul><li><span class="dot">●</span><a href="/blog/archives/">歸檔</a></li><li><span class="dot">●</span><a href="/blog/categories/">分類</a></li><li><span class="dot">●</span><a href="/blog/tags/">標籤</a></li><li><span class="dot">●</span><a href="/blog/about/">關於</a></li><li><span class="dot">●</span><a href="/blog/./"></a></li><li><span class="dot">●</span><a href="/blog/./"></a></li><li class="m-sch"><form class="form" id="j-formsch" method="get"><input class="txt" type="text" id="local-search-input" name="q" value="搜索" onfocus="if(this.value=='搜索'){this.value='';}" onblur="if(this.value==''){this.value='搜索';}"><input type="text" style="display:none;"></form></li></ul><div id="local-search-result"></div></div></nav></div><div id="back2Top"><a class="fa fa-arrow-up" title="Back to top" href="#"></a></div><div class="box" id="container"><div class="l-wrapper"><div class="l-content box"><div class="l-post l-post-art"><article class="p-art"><div class="p-header box"><h1 class="p-title">在 Ubuntu 上安裝 Cisco Packet Tracer</h1><div class="p-info"><span class="p-date"><i class="fa fa-calendar"></i><a href="/blog/2019/10/12/install-cisco-packet-tracer-on-ubuntu/">2019-10-12</a></span><span class="p-category"><i class="fa fa-folder"></i><a href="/blog/categories/%E7%A8%8B%E5%BC%8F/">程式</a></span><span class="p-tags"><i class="fa fa-tags"></i><a href="/blog/tags/Linux/">Linux</a><a href="/blog/tags/Cisco/">Cisco</a><a href="/blog/tags/packet-tracer/">packet tracer</a></span></div></div><div class="p-content"><p>註冊、等審核信、登入、找安裝包這些流程一概略過，因爲這都不是重點。</p>
+<a id="more"></a>
+<p>不過在我下載軟體時發現目前 Cisco 有提供兩個 PacketTracer7 的版本。 (7.1.1, 7.2.2)</p>
+<p>我不確定兩者具體差別在哪裡，不過如果選 7.1.1 (PacketTracer711_64bit_linux.tar) 就只提供文字界面安裝；而 7.2.2 (PacketTracer-7.2.2-ubuntu-setup.run) 則提供圖形化的極簡易安裝。</p>
+<p>裝好後就可以用 packettracer 來開啓 Packet Tracer。</p>
+<hr>
+<p>但是，一切就是這個但是！<br>事情可不是憨人想的這麼簡單！！</p>
+<p>執行 packettracer 後你可能會看到終端機就跳這麼一行訊息：<br><img src="https://truth.bahamut.com.tw/s01/201910/7ae8755eaaf80864bba234657879faa6.JPG" alt=""></p>
+<p>Starting Packet Tracer 7.2.2</p>
+<p>…<br>…….<br>………….????</p>
+<p>爾後去問偉大的谷歌，才知道這不是個案。<br>原因是缺少套件。（OS：大哥你缺套件都不唉一聲的嗎？）</p>
+<p><strong>可能缺少的套件 A： libicu52</strong></p>
+<ol>
+<li><p>下載該套件的安裝包（註：若遇到 404 Not Found，請自行到<a href="http://security.ubuntu.com/ubuntu/pool/main/i/icu/" target="_blank" rel="noopener">該層目錄找對應版本</a>，因爲可能有小升級）</p>
+<pre><code class="bash">wget http://security.ubuntu.com/ubuntu/pool/main/i/icu/libicu52_52.1-3ubuntu0.8_amd64.deb</code></pre>
+</li>
+<li><p>安裝</p>
+<pre><code class="bash">sudo dpkg -i libicu52_52.1-3ubuntu0.8_amd64.deb</code></pre>
+</li>
+<li><p>更新與驗證</p>
+<pre><code class="bash">sudo updatedb; locate libicui18n</code></pre>
+</li>
+</ol>
+<p><strong>可能缺少的套件 B： libpng12</strong></p>
+<ol>
+<li><p>下載安裝包</p>
+<pre><code class="bash">wget http://security.ubuntu.com/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb</code></pre>
+<p>或者到<a href="https://packages.ubuntu.com/xenial/amd64/libpng12-0/download" target="_blank" rel="noopener">這個頁面</a>下載。</p>
+</li>
+<li><p>安裝</p>
+<pre><code class="bash">sudo dpkg -i libpng12-0_1.2.54-1ubuntu1.1_amd64.deb</code></pre>
+</li>
+</ol>
+<p>以上兩項皆安裝完成後應該就能正常開啓了。<br><img src="https://truth.bahamut.com.tw/s01/201910/619ad9a911d4283082c0e07c312db0ec.JPG" alt=""></p>
+<hr>
+<p>安裝時相關環境與版本：  </p>
+<ul>
+<li>OS: Ubuntu 18.04.3 LTS</li>
+<li>Kernel: 4.15.0-65-generic</li>
+<li>DE: Cinnamon 3.6.7</li>
+<li>Packet Tracer: 7.2.2</li>
+</ul>
+<p>參考文章：  </p>
+<ul>
+<li><a href="https://askubuntu.com/questions/963457/cisco-packet-tracer-7-1-wont-start" target="_blank" rel="noopener">Cisco Packet Tracer 7.1 won’t start</a></li>
+<li><a href="https://askubuntu.com/questions/1052924/cisco-packettracer-fails-to-start" target="_blank" rel="noopener">Cisco Packettracer fails to start</a></li>
+</ul>
+</div></article><div class="p-info"></div><aside id="toc"><div class="toc-title">目录</div><nav></nav></aside></div><section class="p-ext"><div class="l-pager l-pager-dtl box"><a class="prev" href="/blog/2020/01/29/linux-login-error-with-auto-enter/">&lt; 在虛擬終端機無法正常登入 -- 輸入密碼時自動換行導致無止境登入失敗</a></div><div id="valine-comment"><style type="text/css">.v * { color: #CECECE; }
+.v a { color: #0F9FB4; }
+.v a:hover { color: #216C73; }
+.v li { list-style: inherit; }
+.v .vwrap { border: 1px solid #223441; border-radius: 0; }
+.v .vwrap:hover { box-shadow: 0 0 6px 1px #223441; }
+.v .vbtn { border-radius: 0; color: #cecece; background: none; }
+.v .vlist .vcard .vh { border-bottom-color: #293D4E; }
+.v .vwrap .vheader .vinput { border-bottom-color: #223441; }
+.v .vwrap .vheader .vinput:focus { border-bottom-color: #339EB4; }
+.v code, .v pre,.v .vlist .vcard .vhead .vsys { background: #203240; }
+.v code, .v pre { color: #F0F0F0; font-size: 95%; }
+.v .vlist .vcard .vcontent.expand:before { background: linear-gradient(180deg,hsla(206,33%,19%,0),hsla(206,33%,19%,.9)); }
+.v .vlist .vcard .vcontent.expand:after { background: hsla(206,33%,19%,.9); }</style><div id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' == true ? true : false;
+var verify = 'false' == true ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'',
+  appKey:'',
+  lang: 'zh-TW',
+  placeholder:'ヾﾉ≧∀≦)o Come on, say something...',
+  avatar:'identicon',
+  guest_info:guest_info,
+  pageSize:'10'
+})</script></div></section><footer><p>Copyright © 2020 - 2020 <a href="/blog/." rel="nofollow">LianSheng</a> | <strong><a rel="nofollow" target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></strong><br>Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a>Theme with<a rel="nofollow" target="_blank" href="https://github.com/litreily/snark-hexo"> snark.</a></p></footer></div></div></div><script type="text/javascript" src="/blog/plugins/prettify/prettify.js"></script><script type="text/javascript" src="/blog/js/search.js"></script><script type="text/javascript" src="/blog/js/top.js"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+    search_path = 'search.xml';
+}
+var path = '/blog/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/blog/js/fancybox.js?v=0.0.1" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.css"></body></html>
