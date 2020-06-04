@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>用 php 產生 png 圖片：近 x 個上線使用者</title>
+      <link href="/blog/2020/05/08/php-generate-png/"/>
+      <url>/blog/2020/05/08/php-generate-png/</url>
+      
+        <content type="html"><![CDATA[<p>這篇只是一個紀錄（或是心得）。<br>以最近做的「近 x 個上線使用者」為例。</p><a id="more"></a><p><img src="http://ls197.000webhostapp.com/kater/lastSeen5.png" alt=""></p><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>基本架構來自於以前寫的一個破專案 <a href="https://github.com/LianSheng197/php-png" target="_blank" rel="noopener">php-png</a></p><h3 id="產生圖片"><a href="#產生圖片" class="headerlink" title="產生圖片"></a>產生圖片</h3><p><strong>幾個關鍵函式</strong></p><ul><li>建立圖片物件：ImageCreate()</li><li>指定背景顏色：ImageColorAllocate()</li><li>插入文字：ImageTTFText()</li><li>產生圖片：ImagePng()</li><li>銷毀圖片：ImageDestroy()</li></ul><p>為了減少伺服器壓力，因此產生圖片時是一次產生，逐行處理<br>（沒有二次疊加圖片。雖然我明白那樣才是解決排版的最簡易解法）</p><p>基於逐行處理，因此在內文的排版時就必須計算關鍵內容的寬度，並填入對應的空格。<br>這裡我採用的是直接計算有幾個非 ASCII 文字跟幾個 ASCII 文字，前者直接當作全形文字，給兩格寬度；後者則當半形文字，給一格寬度。<br>（然而這只能應付 87% 的文字）<br>（遇到編碼超過 0xFFFF 就會亂碼）<br>（遇到字形檔不支援的字就會變方框，佔 2/3 格）<br>（遇到 RLM 之類的零寬控制字元時就會大崩壞）</p><p>總之，在一大堆問題下，我選擇了無視ww</p><h3 id="架構"><a href="#架構" class="headerlink" title="架構"></a>架構</h3><p>從伺服器取得資料 &gt; 用 GAS 做中間媒介 &gt; 再由 php 產生圖片。</p><p>會選擇加上中間的 GAS 純粹是為了方便修改。<br>因為修改 GAS 比修改產生圖片那邊還要容易。<br>（如果不是在家的話，每次要修改都要從 host 把它複製下來，改完再推上去，很麻煩。）<br>（而 GAS 只要登入帳號就能改了）</p><h3 id="核心原始碼"><a href="#核心原始碼" class="headerlink" title="核心原始碼"></a>核心原始碼</h3><p><strong>GAS</strong></p><pre><code class="js">// code.gsfunction doGet(e) {if(e.parameter.lastSeen != undefined) {    // API: 取得最近 X 個上線    let limit = e.parameter.lastSeen;    let rawData = UrlFetchApp.fetch(&quot;https://kater.me/api/users?sort=-lastSeenAt&amp;page[limit]=&quot; + limit, opt).getContentText();    let users = JSON.parse(rawData);    let data = { data: [] };    let final = {};    users.data.forEach(function(user) {      let temp = {};      temp.id = user.id;      if(temp.id == FETCH_DATA_UID){        temp.id = &quot;0&quot;;        temp.username = &quot;&quot;;        temp.time = (Date.parse(user.attributes.lastSeenAt) / 1000) - 292563 + 32;        final = temp;        return;      } else {        temp.username = user.attributes.username;        if(user.attributes.lastSeenAt != undefined){          temp.time = (Date.parse(user.attributes.lastSeenAt) / 1000) + 29;        } else {          temp.time = &quot;X&quot;;        }      }      data.data.push(temp);    });    data.data.push(final);    return ContentService.createTextOutput(JSON.stringify(data));  }}</code></pre><p><strong>PHP (2020.05.08)</strong></p><pre><code class="php">// lastSeen.php$dt = new DateTime();$dateTime = $dt-&gt;format(&#39;Y-m-d H:i:s&#39;);$now = time();$dnt_open = getDNT();$ref = getRef();if (isset($_GET[&quot;limit&quot;])) {    $limit = $_GET[&quot;limit&quot;];} else {    $limit = 20;}if ($limit &gt; 50) {    $limit = 50;}if ($limit == 0) {    $limit = 1;}$text = &quot;最近 $limit 個使用者上線記錄 |圖片更新時間：$dateTime ||&quot;;$url = &quot;https://script.google.com/macros/s/AKfycbxejz2Zqgt1VyWM-0jWXdi8fIj9Nff4fLEjSj8FDS-CBG9Bu5bE/exec?lastSeen=$limit&quot;;$data = file_get_contents($url);$users = json_decode($data);$text .= &quot; UID \| 暱稱 &quot; . str_repeat(&quot; &quot;, 32) . &quot;\| 時間 |&quot;;$text .= str_repeat(&quot;-&quot;, 60) . &quot;|&quot;;foreach ($users-&gt;data as $user) {    $id = $user-&gt;id;    $name = $user-&gt;username;    if ($user-&gt;time != &quot;X&quot;) {        $temp = $user-&gt;time;        $timeStr = &quot;&quot;;        $temp = $now - $temp;        if ($temp &gt; 60) {            $min = intdiv($temp, 60);            $timeStr .= &quot;{$min} 分 &quot;;            $temp = $temp % 60;        }        $timeStr .= &quot;{$temp} 秒前&quot;;        $time = 0;    } else {        $timeStr = &quot;X&quot;;    }    if ($id &gt; 1000) {        $space = &quot; &quot;;    } elseif ($id &gt; 100) {        $space = &quot;  &quot;;    } elseif ($id &gt; 10) {        $space = &quot;   &quot;;    } else {        $space = &quot;    &quot;;    }    $len = strlen($name);    $mblen = mb_strlen($name);    $full = ($len - $mblen) / 2;    $half = $mblen - $full;    $width = 2 * $full + $half;    $repeat = 36 - $width;    if ($repeat &lt; 0) {        $repeat = 0;    }    @$space2 = str_repeat(&quot; &quot;, $repeat + 1);    $text .= &quot;{$id}{$space}\| {$name}{$space2}\| {$timeStr}|&quot;;}</code></pre><p><strong>.htaccess</strong></p><pre><code class="apache">RewriteEngine OnRewriteBase /kater/RewriteRule ^lastSeen(\d+)\.png$ lastSeen.php?limit=$1 [L]</code></pre>]]></content>
+      
+      
+      <categories>
+          
+          <category> 程式 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> php </tag>
+            
+            <tag> png </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>隨筆（20.04.07）</title>
       <link href="/blog/2020/04/07/jottings-Apr-07/"/>
       <url>/blog/2020/04/07/jottings-Apr-07/</url>
